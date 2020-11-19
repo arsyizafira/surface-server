@@ -3,7 +3,7 @@ const Event_file = require('../models/eventpromotion_file');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path')
 const response = require('../../config/response')
-TenantController = {
+EventController = {
   GetData: (req, res) => {
     Event.find({ is_delete: false })
       .then(data => {
@@ -53,7 +53,7 @@ TenantController = {
       data
         .save(data)
         .then(data => {
-          response.ok(`adding event success successfully`, res)
+          response.ok(`adding event success successfully`, res, data._id)
         })
         .catch(err => {
           response.error('500', 'adding Floor failed', res, err)
@@ -61,9 +61,22 @@ TenantController = {
     }
   },
   GetDetail: async (req, res) => {
-    let data = await Event.find({ is_delete: false, _id: req.params.id })
-    data = data.length === 0 ? 'Event not found' : data
+    // let data = await Event.find({ is_delete: false, _id: req.params.id })
+    // data = data.length === 0 ? 'Event not found' : data
+    // response.ok(data, res)
+    let data = await Event.aggregate([
+      { $match: { is_delete: false, _id: mongoose.Types.ObjectId(req.params.id) } },
+      {
+        $lookup: {
+          from: 'eventpromotion_files',
+          localField: "_id",
+          foreignField: "event_id",
+          as: "image"
+        }
+      }])
+
     response.ok(data, res)
+
   },
   Delete: (req, res) => {
     let data = {
@@ -85,8 +98,8 @@ TenantController = {
         cb(null, 'files/event')
       },
       filename: function (req, file, cb) {
-        filename = file.originalname.replace(/\s/g, "-")
-        cb(null, event_id + path.extname(file.originalname))
+        filename = file.originalname.split('.').pop()
+        cb(null, event_id + '.' + filename)
       }
     })
     let fileFilter = (req, file, cb) => {
@@ -96,6 +109,7 @@ TenantController = {
         cb(new Error('file format not supported'), false)
       }
     }
+
     let upload = multer({
       storage: storage,
       limits: {
@@ -115,26 +129,43 @@ TenantController = {
             console.log(err)
           } else {
             if (req.files) {
-              // console.log('masuk')
               for (let i = 0; i < req.files.length; i++) {
-                let path = `tenant_img/${req.files[i].filename}`
+                let path = `event_img/${req.files[i].filename}`
                 let type = req.files[i].mimetype
                 let size = req.files[i].size / 1024
                 let uuid = uuidv4()
-                let tenant_img = new Event_file({
-                  path: path,
-                  type: type,
-                  uuid: uuid,
-                  size: size,
-                  event_id: event_id
-                })
-                try {
-                  success = await tenant_img.save(tenant_img).then(data => success = true)
 
-                } catch (err) {
-                  console.log(err)
+                let avaible = await Event_file.find({ is_delete: false, event_id: req.body.event_id ? req.body.event_id : event_id })
+                status = avaible.length === 0 ? true : false;
+                if (status) {
+                  let event_file = new Event_file({
+                    path: path,
+                    type: type,
+                    uuid: uuid,
+                    size: size,
+                    event_id: req.body.event_id ? req.body.event_id : event_id
+                  })
+                  try {
+                    success = await event_file.save(event_file).then(data => success = true)
+
+                  } catch (err) {
+                    console.log(err)
+
+                  }
+                } else {
+                  modified_time = Date.now()
+                  let data = {
+                    modified_at: modified_time,
+                    path: path,
+                    type: type,
+                    uuid: uuid,
+                    size: size,
+                  }
+                  success = await Event_file.findOneAndUpdate({ _id: avaible[0]._id }, data).then(data => success = true)
+
 
                 }
+
               }
             } else {
               console.log('gada ')
@@ -156,9 +187,7 @@ TenantController = {
   },
 
 
-
-
 }
 
-module.exports = TenantController;
+module.exports = EventController;
 

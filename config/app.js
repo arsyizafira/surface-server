@@ -16,6 +16,11 @@ app.use(cors());
 app.options('*', cors());
 mongoose.set('useFindAndModify', false);
 mongoose.set('useUnifiedTopology', true);
+app.use('/tenant_img', express.static(path.join(__dirname, '../files/tenant')))
+app.use('/event_img', express.static(path.join(__dirname, '../files/event')))
+app.use('/blog_img', express.static(path.join(__dirname, '../files/blog')))
+
+
 
 /*** Global Variable ***/
 require(`./global`)(global);

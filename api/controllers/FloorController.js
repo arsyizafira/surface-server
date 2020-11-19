@@ -2,14 +2,26 @@ const Floor = require('../models/floor');
 const response = require('../../config/response')
 FloorController = {
   GetData: (req, res) => {
-    Floor.find({ is_delete: false })
-      .then(data => {
-        response.ok(data, res, `request success`)
-      })
-      .catch(err => {
-        response.error('500', 'Some error occurred while showing the Floor.', res, err)
+    if (req.query.active == 1) {
+      Floor.find({ is_delete: false, is_active: true })
+        .then(data => {
+          response.ok(data, res, `request success`)
+        })
+        .catch(err => {
+          response.error('500', 'Some error occurred while showing the Floor.', res, err)
 
-      });
+        });
+    } else {
+      Floor.find({ is_delete: false })
+        .then(data => {
+          response.ok(data, res, `request success`)
+        })
+        .catch(err => {
+          response.error('500', 'Some error occurred while showing the Floor.', res, err)
+
+        });
+    }
+
   },
   Update: (req, res) => {
     let modified_time = Date.now()

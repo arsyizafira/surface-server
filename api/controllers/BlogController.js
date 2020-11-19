@@ -51,7 +51,7 @@ BlogController = {
       data
         .save(data)
         .then(data => {
-          response.ok(`adding blog success successfully`, res)
+          response.ok(`adding blog success successfully`, res, data._id)
         })
         .catch(err => {
           response.error('500', 'adding Floor failed', res, err)
@@ -59,9 +59,22 @@ BlogController = {
     }
   },
   GetDetail: async (req, res) => {
-    let data = await Blog.find({ is_delete: false, _id: req.params.id })
-    data = data.length === 0 ? 'blog not found' : data
+    // let data = await Blog.find({ is_delete: false, _id: req.params.id })
+    // data = data.length === 0 ? 'blog not found' : data
+    // response.ok(data, res)
+    let data = await Blog.aggregate([
+      { $match: { is_delete: false, _id: mongoose.Types.ObjectId(req.params.id) } },
+      {
+        $lookup: {
+          from: 'blog_files',
+          localField: "_id",
+          foreignField: "blog_id",
+          as: "image"
+        }
+      }])
+
     response.ok(data, res)
+
   },
   Delete: (req, res) => {
     let data = {
@@ -115,23 +128,43 @@ BlogController = {
             if (req.files) {
               // console.log('masuk')
               for (let i = 0; i < req.files.length; i++) {
-                let path = `tenant_img/${req.files[i].filename}`
+                let path = `blog_img/${req.files[i].filename}`
                 let type = req.files[i].mimetype
                 let size = req.files[i].size / 1024
                 let uuid = uuidv4()
-                let data = new Blog_file({
-                  path: path,
-                  type: type,
-                  uuid: uuid,
-                  size: size,
-                  blog_id: blog_id
-                })
-                try {
-                  success = await data.save(data).then(data => success = true)
+                let avaible = await Blog_file.find({ is_delete: false, blog_id: req.body.blog_id ? req.body.blog_id : blog_id })
+                status = avaible.length === 0 ? true : false;
+                if (status) {
+                  let blog_file = new Blog_file({
+                    path: path,
+                    type: type,
+                    uuid: uuid,
+                    size: size,
+                    blog_id: req.body.blog_id ? req.body.blog_id : blog_id
+                  })
+                  try {
+                    success = await blog_file.save(blog_file).then(data => success = true)
 
-                } catch (err) {
-                  console.log(err)
+                  } catch (err) {
+                    console.log(err)
 
+                  }
+                } else {
+
+                  let data = new Blog_file({
+                    path: path,
+                    type: type,
+                    uuid: uuid,
+                    size: size,
+                    blog_id: blog_id
+                  })
+                  try {
+                    success = await data.save(data).then(data => success = true)
+
+                  } catch (err) {
+                    console.log(err)
+
+                  }
                 }
               }
             } else {

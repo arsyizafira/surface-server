@@ -18,9 +18,9 @@ let blog_file_schema = new Schema({
     type: String,
     default: null
   },
-  event_id: {
+  blog_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'event_promotion',
+    ref: 'blog',
     default: null
   },
   /* config */

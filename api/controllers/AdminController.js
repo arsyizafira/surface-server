@@ -110,7 +110,6 @@ AdminController = {
       response.success("username not found", res)
     } else {
       let passworddb = await uname_check.data[0].password
-      console.log(password)
       if (password) {
         const user = {
           _id: uname_check.data[0]._id,
