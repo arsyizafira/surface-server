@@ -11,25 +11,21 @@ AdminController = {
       })
       .catch(err => {
         response.error('500', 'Some error occurred while showing the Admin.', res, err)
-
       });
   },
   Update: async (req, res) => {
     let modified_time = Date.now()
     let { username, password, role } = req.body
     let hash = await bcrypt.hashSync(password, salt)
-
     if (Object.entries(req.body).length === 0) {
       response.error('400', 'body cant blank', res)
     } else {
-
       let data = {
         password: hash,
         modified_at: modified_time,
         username: username,
         role: role
       }
-
       Admin.findOneAndUpdate({ _id: req.params.id }, data)
         .then(data => {
           response.ok('data update succesfully', res)
@@ -65,7 +61,7 @@ AdminController = {
         data
           .save(data)
           .then(data => {
-            response.ok(`adding Admin success successfully`, res)
+            response.ok(`adding ${req.body.role} success successfully`, res)
           })
           .catch(err => {
             response.error('500', 'adding Admin failed', res, err)

@@ -8,6 +8,7 @@ module.exports = function (global) {
     global.momenttz = require('moment-timezone');
     global.axios = require('axios');
     global.qs = require('qs');
-    global.multer = require('multer')
-    global.jwt = require('jsonwebtoken')
+    global.multer = require('multer');
+    global.response = require('./response');
+    global.jwt = require('jsonwebtoken');
 }
