@@ -5,23 +5,30 @@ let salt = bcrypt.genSaltSync(10);
 AdminController = {
 
   GetData: (req, res) => {
-    Admin.find({ is_delete: false })
-      .then(data => {
-        response.ok(data, res, `request success`)
-      })
-      .catch(err => {
-        response.error('500', 'Some error occurred while showing the Admin.', res, err)
-      });
+    let role = req.query.role == 'dokter' ? 'dokter' : req.query.role == 'admin' ? 'admin' : req.query.role == 'user' ? 'user' : null;
+    if (role) {
+      Admin.find({ is_delete: false, role })
+        .then(data => {
+          response.ok(data, res, `request success`)
+        })
+        .catch(err => {
+          response.error('500', 'Some error occurred while showing the Admin.', res, err)
+        });
+    } else {
+      response.error('400', 'missing role', res)
+    }
+
   },
   Update: async (req, res) => {
     let modified_time = Date.now()
-    let { username, password, role } = req.body
+    let { username, nama_lengkap, password, role } = req.body
     let hash = await bcrypt.hashSync(password, salt)
     if (Object.entries(req.body).length === 0) {
       response.error('400', 'body cant blank', res)
     } else {
       let data = {
         password: hash,
+        nama_lengkap,
         modified_at: modified_time,
         username: username,
         role: role
@@ -46,7 +53,7 @@ AdminController = {
     if (Object.entries(req.body).length === 0) {
       response.error('400', 'body cant blank', res)
     } else {
-      let { username, password, role } = req.body
+      let { username, password, role, nama_lengkap } = req.body
 
       let check = await check_uname(username)
       if (check) {
@@ -55,7 +62,8 @@ AdminController = {
 
         let data = new Admin({
           password: hash,
-          username: username,
+          username,
+          nama_lengkap,
           role: role
         })
         data

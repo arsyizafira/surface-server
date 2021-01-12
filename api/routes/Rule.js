@@ -5,6 +5,7 @@ router.get('/', Rule.GetData);
 router.get('/:id', Rule.GetDetail);
 router.put('/:id', Rule.Update);
 router.post('/', Rule.Add);
+router.delete('/:id', Rule.Delete);
 
 
 

@@ -34,23 +34,48 @@ RuleController = {
         })
     }
   },
-  Add: (req, res) => {
+  Add: async (req, res) => {
     if (Object.entries(req.body).length === 0) {
       response.error('400', 'body cant blank', res)
     } else {
       let { id_penyakit, gejala } = req.body
-      let data = new Rule({
-        id_penyakit,
-        gejala
+      let get_disease = await Rule.find({ is_delete: false }).exec()
+      let check1 = get_disease.map(el => {
+        if (el.gejala.length == gejala.length) {
+          return el
+        }
       })
-      data
-        .save(data)
-        .then(data => {
-          response.ok(`adding Rule  successfully`, res)
+      let filter = check1.filter(el => el != undefined)
+
+      let getDisease = filter.map(el => {
+        let el_gejala = el.gejala.map(e => e)
+        let val = gejala.every((value, index) => value == el_gejala.slice().sort()[index])
+        if (val) {
+
+          return val
+        }
+        el_gejala = []
+
+      })
+      let filter2 = getDisease.filter(el => el != undefined)
+
+      if (filter2.length == 0) {
+        let data = new Rule({
+          id_penyakit,
+          gejala
         })
-        .catch(err => {
-          response.error('500', 'adding Rule failed', res, err)
-        });
+        data
+          .save(data)
+          .then(data => {
+            response.ok(`adding Rule  successfully`, res)
+          })
+          .catch(err => {
+            response.error('500', 'adding Rule failed', res, err)
+          });
+      } else {
+        response.error('500', 'rule ini telah digunakan di penyakit lain', res)
+      }
+
     }
   },
   GetDetail: async (req, res) => {

@@ -1,48 +1,40 @@
 const Admin = require('../models/admin');
-const response = require('../../config/response')
-const Tenant = require('../models/tenant');
-const Event = require('../models/eventpromotion');
-const Blog = require('../models/blog');
-const Category = require('../models/category');
+const Disease = require('../models/disease');
+const Symptom = require('../models/symptom');
+const Rule = require('../models/rule');
 
 
 DashboardController = {
 
   GetData: async (req, res) => {
-    let Event_data = await Event.find({ is_delete: false }).sort({ created_at: -1 })
-    let tenant_data = await Tenant.find({ is_delete: false }).populate('category_id').sort({ created_at: -1 })
-    let Blog_data = await Blog.find({ is_delete: false }).sort({ created_at: -1 })
-    let Category_data = await Category.find({ is_delete: false }).sort({ created_at: -1 })
-
-    let data = {
-      event: {
-        total: Event_data.length,
-        data: Event_data.slice(0, 5)
-      },
-      tenant: {
-        total: tenant_data.length,
-        data: tenant_data.slice(0, 5)
-      },
-      blog: {
-        total: Blog_data.length,
-        data: Blog_data.slice(0, 5)
-      },
-      category: {
-        total: Category_data.length,
-        data: Category_data.slice(0, 5)
+    try {
+      let Dokter_data = await Admin.find({ is_delete: false, role: 'dokter' })
+      let Rule_data = await Rule.find({ is_delete: false })
+      let Disease_data = await Disease.find({ is_delete: false })
+      let Symptom_data = await Symptom.find({ is_delete: false })
+      let data = {
+        dokter: {
+          total: Dokter_data.length,
+        },
+        rule: {
+          total: Rule_data.length,
+        },
+        penyakit: {
+          total: Disease_data.length,
+        },
+        gejala: {
+          total: Symptom_data.length,
+        }
       }
+
+      response.ok(data, res, `request success`)
+
+    } catch (error) {
+      console.log(error)
+      response.error('500', 'error when get dashboard data', res)
+
     }
 
-    response.ok(data, res, `request success`)
-
-    // Admin.find({ is_delete: false })
-    //   .then(data => {
-    // response.ok(data, res, `request success`)
-    //   })
-    //   .catch(err => {
-    //     response.error('500', 'Some error occurred while showing the Admin.', res, err)
-
-    //   });
   },
 
 

@@ -21,5 +21,9 @@ module.exports = function (app) {
   app.use('/api/disease', Disease);
   let Rule = require('../api/routes/Rule');
   app.use('/api/rule', Rule);
+  let Diagnosa = require('../api/routes/Diagnosa');
+  app.use('/api/diagnosa', Diagnosa);
+  let Consultation = require('../api/routes/Consultation');
+  app.use('/api/consultation', Consultation);
 
 }

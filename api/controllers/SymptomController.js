@@ -12,15 +12,14 @@ SymptomController = {
   },
   Update: async (req, res) => {
     let modified_time = Date.now()
-    let { kode, nama, deskripsi, solusi } = req.body
+    let { kode, nama } = req.body
     if (Object.entries(req.body).length === 0) {
       response.error('400', 'body cant blank', res)
     } else {
       let data = {
         kode,
         nama,
-        deskripsi,
-        solusi,
+
         modified_at: modified_time,
       }
 
@@ -48,15 +47,14 @@ SymptomController = {
         result = avaible.length === 0 ? true : false;
         return result
       }
-      let { kode, nama, deskripsi, solusi } = req.body
+      let { kode, nama } = req.body
       let valid = await check_data(kode)
 
       if (valid) {
         let data = new Symptom({
           kode,
-          nama,
-          deskripsi,
-          solusi
+          nama
+
         })
         data
           .save(data)

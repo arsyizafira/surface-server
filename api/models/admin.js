@@ -5,6 +5,10 @@ let admin_schema = new Schema({
     type: String,
     default: null
   },
+  nama_lengkap: {
+    type: String,
+    default: null
+  },
   password: {
     type: String,
     default: null
