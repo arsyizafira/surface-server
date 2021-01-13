@@ -21,7 +21,7 @@ ConsultationController = {
 
       let getDisease = filter.map(el => {
         let el_gejala = el.gejala.map(e => e)
-        let val = gejala.every((value, index) => value == el_gejala.slice().sort()[index])
+        let val = gejala.slice().sort().every((value, index) => value == el_gejala.slice().sort()[index])
         if (val) {
           return el
         }
@@ -31,7 +31,6 @@ ConsultationController = {
       // console.log(gejala)
 
       let filter2 = getDisease.filter(el => el != undefined)
-      console.log(filter2)
       if (filter2.length == 0) {
         //gak ada nih
         response.ok(null, res)
