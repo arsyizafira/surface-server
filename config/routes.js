@@ -13,7 +13,7 @@ module.exports = function (app) {
   app.use('/tenant', Tenant);
   let Blog = require('../api/routes/Blog');
   app.use('/blog', Blog);
-  let admin = require('../api/routes/admin');
+  let admin = require('../api/routes/Admin');
   app.use('/api/admin', admin);
   let Symptom = require('../api/routes/Symptom');
   app.use('/api/symptom', Symptom);
