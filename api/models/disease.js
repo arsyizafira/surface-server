@@ -17,6 +17,10 @@ let disease = new Schema({
     type: String,
     default: null
   },
+  img_path: {
+    type: String,
+    default: null
+  },
 
 
 
