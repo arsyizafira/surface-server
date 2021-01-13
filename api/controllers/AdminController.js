@@ -21,13 +21,11 @@ AdminController = {
   },
   Update: async (req, res) => {
     let modified_time = Date.now()
-    let { username, nama_lengkap, password, role } = req.body
-    let hash = await bcrypt.hashSync(password, salt)
+    let { username, nama_lengkap, role } = req.body
     if (Object.entries(req.body).length === 0) {
       response.error('400', 'body cant blank', res)
     } else {
       let data = {
-        password: hash,
         nama_lengkap,
         modified_at: modified_time,
         username: username,
