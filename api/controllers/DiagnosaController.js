@@ -1,4 +1,4 @@
-const Diagnosa = require('../models/Diagnosa');
+const Diagnosa = require('../models/diagnosa');
 
 DiagnosaController = {
   GetData: (req, res) => {
