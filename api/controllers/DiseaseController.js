@@ -1,4 +1,6 @@
 const Disease = require('../models/disease');
+const firebase = require('../../config/firebase');
+const multer = require('multer');
 
 DiseaseController = {
   GetData: (req, res) => {
@@ -15,15 +17,7 @@ DiseaseController = {
   },
   Update: async (req, res) => {
 
-    let storage = multer.diskStorage({
-      destination: function (req, file, cb) {
-        cb(null, 'files/disease')
-      },
-      filename: function (req, file, cb) {
-        filename = file.originalname.replace(/\s/g, "-")
-        cb(null, new Date().toISOString().replace(/[\/\\:]/g, "_") + filename)
-      }
-    })
+
     let fileFilter = (req, file, cb) => {
       if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
         cb(null, true)
@@ -32,7 +26,7 @@ DiseaseController = {
       }
     }
     let upload = multer({
-      storage: storage,
+      storage: multer.memoryStorage(),
       limits: {
         fileSize: 5 * 1024 * 1024
       },
@@ -48,7 +42,26 @@ DiseaseController = {
 
         let data = null
         if (req.file) {
-          let img_path = `disease_img/${req.file.filename}`
+          let name = req.file.originalname.replace(/\s/g, "-")
+          let newfilename = new Date().toISOString().replace(/[\/\\:]/g, "_") + name
+          const blob = firebase.bucket.file(newfilename)
+          console.log(newfilename)
+          const blobWriter = blob.createWriteStream({
+            metadata: {
+              contentType: req.file.mimetype
+            }
+          })
+
+          blobWriter.on('error', (err) => {
+            console.log(err)
+          })
+
+          blobWriter.on('finish', () => {
+            console.log('file upload')
+            // res.status(200).send("File uploaded.")
+          })
+          blobWriter.end(req.file.buffer)
+          let img_path = `https://firebasestorage.googleapis.com/v0/b/sistem-pakar-5253d.appspot.com/o/${newfilename}?alt=media`
           let kode = req.body.kode
           let nama = req.body.nama
           let deskripsi = req.body.deskripsi
@@ -91,15 +104,7 @@ DiseaseController = {
 
   },
   Add: async (req, res) => {
-    let storage = multer.diskStorage({
-      destination: function (req, file, cb) {
-        cb(null, 'files/disease')
-      },
-      filename: function (req, file, cb) {
-        filename = file.originalname.replace(/\s/g, "-")
-        cb(null, new Date().toISOString().replace(/[\/\\:]/g, "_") + filename)
-      }
-    })
+
     let fileFilter = (req, file, cb) => {
       if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
         cb(null, true)
@@ -108,7 +113,7 @@ DiseaseController = {
       }
     }
     let upload = multer({
-      storage: storage,
+      storage: multer.memoryStorage(),
       limits: {
         fileSize: 5 * 1024 * 1024
       },
@@ -122,6 +127,7 @@ DiseaseController = {
 
       } else {
 
+
         let check_data = async (kode) => {
           let avaible = await Disease.find({ is_delete: false, kode: `${kode}` })
           result = avaible.length === 0 ? true : false;
@@ -131,8 +137,28 @@ DiseaseController = {
           let valid = await check_data(req.body.kode)
 
           if (valid) {
+            let name = req.file.originalname.replace(/\s/g, "-")
+            let newfilename = new Date().toISOString().replace(/[\/\\:]/g, "_") + name
+            const blob = firebase.bucket.file(newfilename)
+            console.log(newfilename)
+            const blobWriter = blob.createWriteStream({
+              metadata: {
+                contentType: req.file.mimetype
+              }
+            })
 
-            let img_path = `disease_img/${req.file.filename}`
+            blobWriter.on('error', (err) => {
+              console.log(err)
+            })
+
+            blobWriter.on('finish', () => {
+              console.log('file upload')
+              // res.status(200).send("File uploaded.")
+            })
+            blobWriter.end(req.file.buffer)
+            let img_path = `https://firebasestorage.googleapis.com/v0/b/sistem-pakar-5253d.appspot.com/o/${newfilename}?alt=media`
+
+
             let kode = req.body.kode
             let nama = req.body.nama
             let deskripsi = req.body.deskripsi

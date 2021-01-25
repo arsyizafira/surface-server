@@ -23,6 +23,7 @@
     "express-fileupload": "^1.1.5",
     "express-session": "^1.16.1",
     "express-validator": "^5.3.1",
+    "firebase-admin": "^9.4.2",
     "flatry": "^1.0.12",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
@@ -44,6 +45,7 @@
     "path": "^0.12.7",
     "pug": "2.0.0-beta11",
     "twilio": "^3.31.1",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "uuid-v4": "^0.1.0"
   }
 }
