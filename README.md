@@ -1,4 +1,4 @@
-# queue-server
+# sistem pakar server
 
 make sure you have node JS
 
