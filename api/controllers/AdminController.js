@@ -15,6 +15,7 @@ AdminController = {
           response.error('500', 'Some error occurred while showing the Admin.', res, err)
         });
     } else {
+
       response.error('400', 'missing role', res)
     }
 
@@ -99,15 +100,15 @@ AdminController = {
   Login: async (req, res) => {
     let check_uname = async (username) => {
       let avaible = await Admin.find({ is_delete: false, username: username })
-      status = avaible.length === 0 ? true : false;
-      result = {
+      let status = avaible.length === 0 ? true : false;
+      let result = {
         status: status,
         data: avaible
       }
       return result
     }
     let { username, password } = req.body
-    uname_check = await check_uname(username)
+    let uname_check = await check_uname(username)
     if (uname_check.status) {
       response.success("username not found", res)
     } else {

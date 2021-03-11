@@ -35,6 +35,7 @@ RuleController = {
     }
   },
   Add: async (req, res) => {
+    console.log(req.body.gejala)
     if (Object.entries(req.body).length === 0) {
       response.error('400', 'body cant blank', res)
     } else {
